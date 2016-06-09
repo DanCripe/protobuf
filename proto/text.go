@@ -188,6 +188,11 @@ func writeStruct(w *textWriter, sv reflect.Value) error {
 		props := sprops.Prop[i]
 		name := st.Field(i).Name
 
+		if st.Field(i).Tag.Get("protobuf") == "-" {
+			// if `protobuf:"-"` skip silently
+			continue
+		}
+
 		if strings.HasPrefix(name, "XXX_") {
 			// There are two XXX_ fields:
 			//   XXX_unrecognized []byte

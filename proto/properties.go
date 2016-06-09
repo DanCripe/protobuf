@@ -690,7 +690,7 @@ func (p *Properties) init(typ reflect.Type, name, tag string, f *reflect.StructF
 	if f != nil {
 		p.field = toField(f)
 	}
-	if tag == "" {
+	if tag == "" || tag == "-" {
 		return
 	}
 	p.Parse(tag)
@@ -783,7 +783,8 @@ func getPropertiesLocked(t reflect.Type) *StructProperties {
 			}
 			print("\n")
 		}
-		if p.enc == nil && !strings.HasPrefix(f.Name, "XXX_") && !oneof {
+		omit := f.Tag.Get("protobuf") == "-" // special case
+		if p.enc == nil && !strings.HasPrefix(f.Name, "XXX_") && !oneof && !omit {
 			fmt.Fprintln(os.Stderr, "proto: no encoder for", f.Name, f.Type.String(), "[GetProperties]")
 		}
 	}
