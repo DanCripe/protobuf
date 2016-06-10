@@ -180,6 +180,10 @@ type raw interface {
 	Bytes() []byte
 }
 
+func isPrivateGoName(name string) bool {
+	return len(name) == 0 || strings.ToLower(name[:1]) == name[:1]
+}
+
 func writeStruct(w *textWriter, sv reflect.Value) error {
 	st := sv.Type()
 	sprops := GetProperties(st)
@@ -188,8 +192,7 @@ func writeStruct(w *textWriter, sv reflect.Value) error {
 		props := sprops.Prop[i]
 		name := st.Field(i).Name
 
-		if st.Field(i).Tag.Get("protobuf") == "-" {
-			// if `protobuf:"-"` skip silently
+		if isPrivateGoName(name) || st.Field(i).Tag.Get("protobuf") == "-" {
 			continue
 		}
 
